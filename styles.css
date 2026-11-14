@@ -1866,3 +1866,5 @@ a[href^="mailto:"]{white-space:nowrap;overflow-wrap:normal;word-break:keep-all}
 .hero__demo .ic{flex:none;width:34px;height:34px;padding:7px;border-radius:50%;background:var(--accent);color:#fff;stroke-width:2.4}
 .hero__demo b{color:var(--ink)}
 @media (max-width:640px){.hero__demo{border-radius:20px;font-size:.95rem;align-items:flex-start}}
+.hero__sub{margin:14px auto 0;font:900 clamp(1.45rem,3.2vw,2.5rem)/1.12 var(--f);letter-spacing:-.035em;color:var(--ink);text-wrap:balance}
+.hero__sub mark{background:linear-gradient(transparent 58%,var(--mint) 58%);color:var(--accent-deep);padding:0 .08em;border-radius:4px}
