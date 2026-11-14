@@ -10,7 +10,7 @@
     { id: 'wiz', name: 'Wizytówka', desc: 'Jedna strona', base: 1490, incl: 1, max: 1, days: [5, 7] },
     { id: 'lp', name: 'Landing page', desc: 'Pod kampanię', base: 990, incl: 1, max: 1, days: [4, 6] },
     { id: 'firma', name: 'Strona firmowa', desc: 'Z podstronami', base: 2990, incl: 8, max: 20, days: [10, 15] },
-    { id: 'sklep', name: 'Sklep internetowy', desc: 'Sprzedaż online', base: 6900, incl: 10, max: 20, days: [20, 30] }
+    { id: 'premium', name: 'Strona Premium', desc: 'Animacje, wideo, blog', base: 5490, incl: 15, max: 25, days: [15, 20], inc: ['blog', 'en', 'cms', 'rez'] }
   ];
   const EXTRAS = [
     { id: 'rez', name: 'Rezerwacje lub umawianie wizyt', price: 490, days: 2 },
@@ -51,11 +51,13 @@
     $('cPagesInfo').textContent = t.max === 1 ? 'Ten rodzaj strony to jedna rozbudowana strona z sekcjami.' : `W cenie ${t.incl} podstron. Każda kolejna: 290 zł.`;
     const lines = [[t.name, t.base]];
     if (extraPages) lines.push([`Dodatkowe podstrony × ${extraPages}`, extraPages * 290]);
-    EXTRAS.filter((x) => st.extras.has(x.id)).forEach((x) => lines.push([x.name, x.price]));
+    const inc = (x) => (t.inc || []).includes(x.id);
+    EXTRAS.filter((x) => st.extras.has(x.id) && !inc(x)).forEach((x) => lines.push([x.name, x.price]));
+    form.querySelectorAll('input[name=extra]').forEach((el) => { const x = EXTRAS.find((e) => e.id === el.value); const em = el.parentElement.querySelector('em'); em.textContent = inc(x) ? 'w cenie' : '+' + zl(x.price); el.disabled = inc(x); el.parentElement.classList.toggle('is-inc', inc(x)); });
     let sum = lines.reduce((a, [, v]) => a + v, 0);
     const term = TERMS.find((x) => x.id === st.term);
     if (term.mult > 1) { lines.push(['Termin ekspresowy (+25%)', sum * 0.25]); sum *= term.mult; }
-    const days = t.days.map((d) => d + extraPages + EXTRAS.filter((x) => st.extras.has(x.id)).reduce((a, x) => a + x.days, 0)).map((d) => Math.ceil(d / (term.speed || 1)));
+    const days = t.days.map((d) => d + extraPages + EXTRAS.filter((x) => st.extras.has(x.id) && !inc(x)).reduce((a, x) => a + x.days, 0)).map((d) => Math.ceil(d / (term.speed || 1)));
     const care = CARE.find((x) => x.id === st.care);
     $('sPrice').textContent = `${zl(sum)} – ${zl(Math.round(sum * 1.15 / 10) * 10)}`;
     $('sPrice2').textContent = $('sPrice').textContent;

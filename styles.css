@@ -1778,3 +1778,5 @@ h1,h2,h3{overflow-wrap:break-word}
 .brand__word{font:900 1.3rem/1 var(--f);letter-spacing:-.03em;text-transform:none;margin-right:0}
 .brand__word span{font-weight:500;color:var(--ink-2)}
 .foot .brand__word span,.sec--dark .brand__word span{color:inherit;opacity:.7}
+.copt.is-inc .copt__b{background:var(--mint-2);border-color:var(--mint);cursor:default}
+.copt.is-inc .copt__b em{color:var(--accent-deep)}
