@@ -7,10 +7,9 @@
   const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;');
 
   const TYPES = [
-    { id: 'wiz', name: 'Wizytówka', desc: 'Jedna strona', base: 1490, incl: 1, max: 1, days: [5, 7] },
-    { id: 'lp', name: 'Landing page', desc: 'Pod kampanię', base: 990, incl: 1, max: 1, days: [4, 6] },
-    { id: 'firma', name: 'Strona firmowa', desc: 'Z podstronami', base: 2990, incl: 8, max: 20, days: [10, 15] },
-    { id: 'premium', name: 'Strona Premium', desc: 'Animacje, wideo, blog', base: 5490, incl: 15, max: 25, days: [15, 20], inc: ['blog', 'en', 'cms', 'rez'] }
+    { id: 'demo', name: 'Najpierw darmowe demo', desc: 'Projekt strony głównej w 48 h', base: 0, incl: 1, max: 1, days: [2, 2] },
+    { id: 'wiz', name: 'Strona wizytówkowa', desc: 'Jedna strona, 5–7 sekcji', base: 1490, incl: 1, max: 1, days: [5, 7] },
+    { id: 'firma', name: 'Strona firmowa', desc: 'Z podstronami usług', base: 2990, incl: 8, max: 20, days: [10, 15] }
   ];
   const EXTRAS = [
     { id: 'rez', name: 'Rezerwacje lub umawianie wizyt', price: 490, days: 2 },
@@ -32,7 +31,7 @@
     { id: 'std', name: 'Standard', desc: '+ 2 zmiany miesięcznie', price: 99 },
     { id: 'pro', name: 'Pro', desc: '+ raport SEO i zmiany bez limitu', price: 199 }
   ];
-  const st = { type: 'firma', pages: 5, extras: new Set(['gmb']), term: 'std', care: 'std' };
+  const st = { type: location.hash === '#demo' ? 'demo' : 'firma', pages: 5, extras: new Set(['gmb']), term: 'std', care: 'std' };
 
   const opt = (group, o, checked, multi) => `<label class="copt"><input type="${multi ? 'checkbox' : 'radio'}" name="${group}" value="${o.id}" ${checked ? 'checked' : ''}><span class="copt__b"><b>${esc(o.name)}</b>${o.desc ? `<small>${esc(o.desc)}</small>` : ''}${o.priceLabel ? `<em>${o.priceLabel}</em>` : ''}</span></label>`;
   $('cType').innerHTML = TYPES.map((t) => opt('type', { ...t, priceLabel: 'od ' + zl(t.base) }, t.id === st.type)).join('');
@@ -59,12 +58,25 @@
     if (term.mult > 1) { lines.push(['Termin ekspresowy (+25%)', sum * 0.25]); sum *= term.mult; }
     const days = t.days.map((d) => d + extraPages + EXTRAS.filter((x) => st.extras.has(x.id) && !inc(x)).reduce((a, x) => a + x.days, 0)).map((d) => Math.ceil(d / (term.speed || 1)));
     const care = CARE.find((x) => x.id === st.care);
-    $('sPrice').textContent = `${zl(sum)} – ${zl(Math.round(sum * 1.15 / 10) * 10)}`;
+    const isDemo = t.id === 'demo';
+    form.classList.toggle('is-demo', isDemo);
+    form.querySelectorAll('.calc__step--paid').forEach((f) => { f.hidden = isDemo; });
+    $('sK').textContent = isDemo ? 'Darmowe demo' : 'Orientacyjna cena';
+    $('sNet').textContent = isDemo ? 'bez umowy i bez płatności' : 'netto, płatne jednorazowo';
+    $('sBtn').textContent = isDemo ? 'Zamów darmowe demo' : 'Wyślij zapytanie o wycenę';
+    if (isDemo) {
+      $('sPrice').textContent = '0 zł';
+      $('sLines').innerHTML = ['Projekt strony głównej na Twoich danych', 'Podgląd na komputerze i telefonie', 'Wycena całej strony razem z demo'].map((n) => `<li><span>${esc(n)}</span><b class="calc__chk"><svg class="ic" aria-hidden="true"><use href="#i-yes"/></svg></b></li>`).join('');
+      $('sTime').textContent = '48 godzin';
+      $('sCare').textContent = 'decydujesz po demo';
+    } else {
+      $('sPrice').textContent = `${zl(sum)} – ${zl(Math.round(sum * 1.15 / 10) * 10)}`;
+      $('sLines').innerHTML = lines.map(([n, v]) => `<li><span>${esc(n)}</span><b>${zl(v)}</b></li>`).join('');
+      $('sTime').textContent = `${days[0]}–${days[1]} dni rob.`;
+      $('sCare').textContent = care.price ? `${care.name}, ${zl(care.price)}/mies.` : 'bez opieki';
+    }
     $('sPrice2').textContent = $('sPrice').textContent;
-    $('sLines').innerHTML = lines.map(([n, v]) => `<li><span>${esc(n)}</span><b>${zl(v)}</b></li>`).join('');
-    $('sTime').textContent = `${days[0]}–${days[1]} dni rob.`;
-    $('sCare').textContent = care.price ? `${care.name}, ${zl(care.price)}/mies.` : 'bez opieki';
-    return { t, lines, sum, days, care, term };
+    return { t, lines, sum, days, care, term, isDemo };
   };
 
   form.addEventListener('change', (e) => {
@@ -83,7 +95,11 @@
     if (!name || !/^\S+@\S+\.\S+$/.test(mail)) { err.hidden = false; err.textContent = !name ? 'Podaj imię, żebyśmy wiedzieli, jak się do Ciebie zwracać.' : 'Podaj poprawny adres e-mail, na który wyślemy wycenę.'; (!name ? $('fName') : $('fMail')).focus(); return; }
     err.hidden = true;
     const r = calc();
-    const body = [
+    const body = r.isDemo ? [
+      `Dzień dobry, proszę o darmowe demo strony głównej.`, '',
+      `Imię: ${name}`, `Firma: ${$('fFirm').value}`, `E-mail: ${mail}`, `Telefon: ${$('fTel').value}`,
+      `Obecna strona / wizytówka: ${$('fUrl').value}`, '', $('fMsg').value
+    ].join('\n') : [
       `Dzień dobry, proszę o wycenę strony.`, '',
       `Rodzaj: ${r.t.name}`, `Podstrony: ${st.pages}`,
       `Dodatki: ${EXTRAS.filter((x) => st.extras.has(x.id)).map((x) => x.name).join(', ') || 'brak'}`,
@@ -92,7 +108,7 @@
       `Imię: ${name}`, `Firma: ${$('fFirm').value}`, `E-mail: ${mail}`, `Telefon: ${$('fTel').value}`,
       `Obecna strona / wizytówka: ${$('fUrl').value}`, '', $('fMsg').value
     ].join('\n');
-    location.href = `mailto:pborkowski0301@gmail.com?subject=${encodeURIComponent('Wycena strony: ' + r.t.name)}&body=${encodeURIComponent(body)}`;
+    location.href = `mailto:pborkowski0301@gmail.com?subject=${encodeURIComponent(r.isDemo ? 'Darmowe demo strony' : 'Wycena strony: ' + r.t.name)}&body=${encodeURIComponent(body)}`;
   });
   calc();
 })();

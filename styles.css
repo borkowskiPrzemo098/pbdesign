@@ -1780,3 +1780,42 @@ h1,h2,h3{overflow-wrap:break-word}
 .foot .brand__word span,.sec--dark .brand__word span{color:inherit;opacity:.7}
 .copt.is-inc .copt__b{background:var(--mint-2);border-color:var(--mint);cursor:default}
 .copt.is-inc .copt__b em{color:var(--accent-deep)}
+
+/* liczniki porównania: jedna siatka dla wszystkich wierszy */
+.bars{grid-template-columns:minmax(84px,max-content) minmax(48px,1fr) minmax(88px,max-content);column-gap:14px}
+.bars li,.bars li.is-us{grid-column:1/-1;display:grid;grid-template-columns:subgrid;gap:0 14px}
+.bars b{text-align:right;white-space:nowrap}
+.bars__l{white-space:nowrap}
+@media (max-width:640px){.bars{grid-template-columns:max-content minmax(32px,1fr) max-content;column-gap:10px}.bars li,.bars li.is-us{gap:0 10px}}
+/* kontakt: długi e-mail */
+.cta__card dl div{grid-template-columns:5.5em minmax(0,1fr)}
+.cta__card dd{min-width:0;overflow-wrap:anywhere}
+.foot__contact a{overflow-wrap:anywhere}
+.calc__main{counter-reset:cst}
+.calc__step:not([hidden]){counter-increment:cst}
+.calc__step legend span::before{content:counter(cst)}
+.calc__opts--3{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media (max-width:640px){.calc__opts--3{grid-template-columns:1fr}}
+.calc__chk .ic{width:16px;height:16px;color:var(--accent-hi);stroke-width:3}
+.calc.is-demo .calc__price{color:var(--accent-hi)}
+
+/* =================== Oferta: kolorowe ilustracje =================== */
+.art{display:block;height:132px;border-radius:20px;margin-bottom:6px;overflow:hidden;transition:transform .45s var(--ease)}
+.art svg{width:100%;height:100%;display:block}
+.mt:hover .art{transform:translateY(-3px)}
+.art--mint{background:linear-gradient(135deg,#DDF5EC,#C3EBDD)}
+.art--sky{background:linear-gradient(135deg,#E3ECFC,#C9D9F7)}
+.art--sand{background:linear-gradient(135deg,#FBF0E1,#F3DFC2)}
+.art--coral{background:linear-gradient(135deg,#FDEBE5,#F8D2C6)}
+.art--teal{background:linear-gradient(135deg,#E2F2F3,#C6E6E8)}
+.mt--wide .art{height:150px}
+.mt--demo{box-shadow:0 0 0 2px var(--accent),var(--shadow)}
+.mt--demo .textlink{margin-top:4px}
+/* Cennik: karta darmowego demo */
+.plan--demo{box-shadow:0 0 0 2px var(--accent),var(--shadow)}
+.plan__badge--free{background:var(--accent);color:#fff}
+.plan--demo .plan__price b{color:var(--accent-deep)}
+.tag--hot{background:var(--accent);color:#fff;border-color:var(--accent)}
+.tag--hot .ic{color:var(--accent-hi)}
+@media (max-width:640px){.cta__card dl div{grid-template-columns:1fr;gap:2px}.cta__card dd{overflow-wrap:normal;word-break:normal}}
+.vs__time h3{line-height:1.2}
