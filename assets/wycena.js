@@ -37,7 +37,6 @@
   $('cType').innerHTML = TYPES.map((t) => opt('type', { ...t, priceLabel: 'od ' + zl(t.base) }, t.id === st.type)).join('');
   $('cExtras').innerHTML = EXTRAS.map((x) => opt('extra', { ...x, priceLabel: '+' + zl(x.price) }, st.extras.has(x.id), true)).join('');
   $('cTerm').innerHTML = TERMS.map((t) => opt('term', t, t.id === st.term)).join('');
-  $('cCare').innerHTML = CARE.map((c) => opt('care', { ...c, priceLabel: c.price ? zl(c.price) + '/mies.' : '' }, c.id === st.care)).join('');
 
   const calc = () => {
     const t = TYPES.find((x) => x.id === st.type);
@@ -62,18 +61,18 @@
     form.classList.toggle('is-demo', isDemo);
     form.querySelectorAll('.calc__step--paid').forEach((f) => { f.hidden = isDemo; });
     $('sK').textContent = isDemo ? 'Darmowe demo' : 'Orientacyjna cena';
-    $('sNet').textContent = isDemo ? 'bez umowy i bez płatności' : 'netto, płatne jednorazowo';
+    $('sNet').textContent = isDemo ? 'bez umowy i bez płatności' : 'netto, płatne jednorazowo z góry';
     $('sBtn').textContent = isDemo ? 'Zamów darmowe demo' : 'Wyślij zapytanie o wycenę';
     if (isDemo) {
       $('sPrice').textContent = '0 zł';
       $('sLines').innerHTML = ['Projekt strony głównej na Twoich danych', 'Podgląd na komputerze i telefonie', 'Wycena całej strony razem z demo'].map((n) => `<li><span>${esc(n)}</span><b class="calc__chk"><svg class="ic" aria-hidden="true"><use href="#i-yes"/></svg></b></li>`).join('');
       $('sTime').textContent = '48 godzin';
-      $('sCare').textContent = 'decydujesz po demo';
+      $('sCare').textContent = 'bez płatności';
     } else {
       $('sPrice').textContent = `${zl(sum)} – ${zl(Math.round(sum * 1.15 / 10) * 10)}`;
       $('sLines').innerHTML = lines.map(([n, v]) => `<li><span>${esc(n)}</span><b>${zl(v)}</b></li>`).join('');
       $('sTime').textContent = `${days[0]}–${days[1]} dni rob.`;
-      $('sCare').textContent = care.price ? `${care.name}, ${zl(care.price)}/mies.` : 'bez opieki';
+      $('sCare').textContent = 'jednorazowo, z góry';
     }
     $('sPrice2').textContent = $('sPrice').textContent;
     return { t, lines, sum, days, care, term, isDemo };
@@ -83,7 +82,7 @@
     const el = e.target;
     if (el.name === 'type') st.type = el.value;
     if (el.name === 'term') st.term = el.value;
-    if (el.name === 'care') st.care = el.value;
+    
     if (el.name === 'extra') el.checked ? st.extras.add(el.value) : st.extras.delete(el.value);
     calc();
   });
@@ -103,7 +102,7 @@
       `Dzień dobry, proszę o wycenę strony.`, '',
       `Rodzaj: ${r.t.name}`, `Podstrony: ${st.pages}`,
       `Dodatki: ${EXTRAS.filter((x) => st.extras.has(x.id)).map((x) => x.name).join(', ') || 'brak'}`,
-      `Termin: ${r.term.name}`, `Opieka: ${r.care.name}`,
+      `Termin: ${r.term.name}`, `Płatność: jednorazowo z góry`,
       `Orientacyjna cena z kalkulatora: ${$('sPrice').textContent} netto`, '',
       `Imię: ${name}`, `Firma: ${$('fFirm').value}`, `E-mail: ${mail}`, `Telefon: ${$('fTel').value}`,
       `Obecna strona / wizytówka: ${$('fUrl').value}`, '', $('fMsg').value

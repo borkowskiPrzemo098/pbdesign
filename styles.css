@@ -1868,3 +1868,15 @@ a[href^="mailto:"]{white-space:nowrap;overflow-wrap:normal;word-break:keep-all}
 @media (max-width:640px){.hero__demo{border-radius:20px;font-size:.95rem;align-items:flex-start}}
 .hero__sub{margin:14px auto 0;font:900 clamp(1.45rem,3.2vw,2.5rem)/1.12 var(--f);letter-spacing:-.035em;color:var(--ink);text-wrap:balance}
 .hero__sub mark{background:linear-gradient(transparent 58%,var(--mint) 58%);color:var(--accent-deep);padding:0 .08em;border-radius:4px}
+
+/* Cennik: płatność bez abonamentu */
+.paygrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.payc{background:#fff;border-radius:var(--r);box-shadow:var(--shadow);padding:24px;display:grid;gap:8px;align-content:start}
+.payc h3{font-size:1.15rem;letter-spacing:-.02em}
+.payc p{color:var(--ink-2);font-size:.95rem}
+.payc__n{display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:var(--dark);color:#fff;font-weight:900}
+.payc--accent{background:var(--dark);color:var(--on-dark-2)}
+.payc--accent h3{color:#fff}.payc--accent p{color:var(--on-dark-2)}
+.payc--accent .payc__n{background:var(--accent-hi);color:var(--dark)}
+@media (max-width:900px){.paygrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:640px){.paygrid{grid-template-columns:1fr}}
